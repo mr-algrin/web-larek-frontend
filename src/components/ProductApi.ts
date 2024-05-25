@@ -1,10 +1,5 @@
 import {Api, ApiListResponse} from "./base/api";
-import {IProduct} from "../types";
-
-export interface IProductApi {
-  getProducts: () => Promise<Array<IProduct>>
-  getProduct: (id: string) => Promise<IProduct | null>
-}
+import {IProduct, IProductApi} from "../types";
 
 
 export class ProductApi extends Api implements IProductApi {

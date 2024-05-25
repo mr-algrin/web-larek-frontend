@@ -1,8 +1,10 @@
-import {IOrder, IOrderResult} from "../types";
 import {Api} from "./base/api";
 
-export interface IOrderApi {
-  createOrder: (order: IOrder) => Promise<IOrderResult | null>
+import {IOrder, IOrderApi} from "../types";
+
+export interface IOrderResult {
+  id: string;
+  total: number
 }
 
 

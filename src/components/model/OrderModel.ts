@@ -15,7 +15,7 @@ export class OrderModel extends Model implements IOrderModel {
     return this._buyer;
   }
 
-  changeBuyerInfo<K extends keyof IBuyerInfo>(key: K, value: IBuyerInfo[K]): void {
+  changeBuyerField<K extends keyof IBuyerInfo>(key: K, value: IBuyerInfo[K]): void {
     this._buyer[key] = value;
   }
 

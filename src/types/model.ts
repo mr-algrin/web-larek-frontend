@@ -1,5 +1,4 @@
 import {IProduct, ProductIdType} from "./entity";
-import {IEvents} from "../components/base/events";
 
 export interface ICatalogModel {
   products: Array<IProduct>
@@ -7,17 +6,8 @@ export interface ICatalogModel {
   getProduct: (id: ProductIdType) => IProduct | null
 }
 
-export interface ICatalogModelConstructor {
-  new(events: IEvents): ICatalogModel
-}
-
-export type BasketProductCount = {
-  product: IProduct;
-  count: number;
-}
-
 export interface IBasketModel {
-  products: Map<ProductIdType, BasketProductCount>
+  products: Map<ProductIdType, IProduct>
   addProduct: (product: IProduct) => void
   removeProduct: (id: ProductIdType) => void
   getTotal: () => number
@@ -35,6 +25,6 @@ export interface IBuyerInfo {
 
 export interface IOrderModel {
   buyer: IBuyerInfo
-  changeBuyerInfo: <K extends keyof IBuyerInfo>(key: K, value: IBuyerInfo[K]) => void
+  changeBuyerField: <K extends keyof IBuyerInfo>(key: K, value: IBuyerInfo[K]) => void
   reset: () => void
 }

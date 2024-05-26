@@ -20,3 +20,8 @@ export interface IOrder {
   total: number;
   items: Array<string>;
 }
+
+export interface IOrderResult {
+  id: string
+  total: number
+}

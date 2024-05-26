@@ -1,5 +1,4 @@
-import {IOrder, IProduct, ProductIdType} from "./entity";
-import {IOrderResult} from "./api";
+import {IOrder, IOrderResult, IProduct, ProductIdType} from "./entity";
 import {IBuyerInfo} from "./model";
 
 // Модуль содержит перечисления текстовых типов событий, а также описывает соответствующие объекты этих событий
@@ -38,6 +37,6 @@ export type BuyerInfoChangeEvent = {
   buyer: IBuyerInfo
 }
 
-export type ProductActionEvent = {
+export type BasketProductEvent = {
   id: ProductIdType
 }

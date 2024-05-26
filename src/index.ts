@@ -33,7 +33,7 @@ const application: IApplication =
 
 events.on<CatalogUpdateEvent>(CatalogEventsEnum.CatalogUpdated, (event ) => {
   console.log('products', event.products);
-})
+});
 
 // Получение данных с сервера
 application.productApi.getProducts()

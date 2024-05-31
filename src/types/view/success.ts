@@ -4,6 +4,6 @@ export interface SuccessData {
 }
 
 export interface SuccessSettings {
-  price: string;
+  description: string;
   successButton: string;
 }

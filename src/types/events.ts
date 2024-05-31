@@ -4,8 +4,8 @@ import {IBuyerInfo} from "./model";
 // Модуль содержит перечисления текстовых типов событий, а также описывает соответствующие объекты этих событий
 // Данные события используются для коммуникации между архитектруными слоями приложения
 
-export enum CatalogEventsEnum {
-  CatalogUpdated = 'catalog:updated'
+export enum ModelEvents {
+  CatalogUpdated = 'model:catalog-updated'
 }
 
 export type CatalogUpdateEvent = {
@@ -25,18 +25,22 @@ export type OrderCreatedEvent = {
   result: IOrderResult
 }
 
-export enum UIEventsEnum {
-  ProductSelected = 'ui:product-selected',
+export enum UIEvents {
+  ModalClose = 'ui:modal-close',
+  ProductSelect = 'ui:product-select',
   BasketAddProduct = 'ui:basket-add',
   BasketRemoveProduct = 'ui:basket-remove',
   BasketOpen = 'ui:basket-open',
-  BuyerInfoChanged = 'ui:buyer-info-changed'
+  OrderInfoChanged = 'ui:order-info-changed',
+  OrderInfoComplete = 'ui:order-info-complete',
+  ContactsInfoChanged = 'ui:contacts-info-changed',
+  ContactsInfoComplete = 'ui:contacts-info-complete'
 }
 
 export type BuyerInfoChangeEvent = {
   buyer: IBuyerInfo
 }
 
-export type BasketProductEvent = {
+export type ProductEvent = {
   id: ProductIdType
 }

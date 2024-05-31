@@ -9,7 +9,6 @@ export interface CardCatalogData {
 }
 
 export interface CardCatalogSettings {
-  cardButton: string;
   category: string;
   title: string;
   image: string;

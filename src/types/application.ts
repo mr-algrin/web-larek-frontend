@@ -1,21 +1,27 @@
 import {IBasketModel, ICatalogModel, IOrderModel} from "./model";
-import {IOrderApi, IProductApi} from "./api";
+import {IBasketCounterComponent, IGalleryComponent, IModal, ModalComponentsMap} from "./component";
+import {ProductEvent} from "./events";
 
-export enum ModalState {
-  product,
-  basket,
-  contacts,
-  order,
-  success
-}
-
+// Класс контроллера
 export interface IApplication {
+  // модели
   basketModel: IBasketModel
   catalogModel: ICatalogModel
   orderModel: IOrderModel
-  productApi: IProductApi
-  orderApi: IOrderApi
-  modalState: ModalState | null
 
-  setModalState: (state: ModalState | null) => void
+  // контейнерные компоненты
+  gallery: IGalleryComponent;
+  basketCounter: IBasketCounterComponent;
+
+  // модальные компоненты
+  modal: IModal;
+  modalComponents: ModalComponentsMap;
+
+  init: () => void
+  updateBasketCounter: () => void
+  updateCatalog: () => void
+  openBasket: () => void
+  selectProduct: (evt: ProductEvent) => void
+  addProductToBasket: (evt: ProductEvent) => void
+  removeProductFromBasket: (evt: ProductEvent) => void
 }

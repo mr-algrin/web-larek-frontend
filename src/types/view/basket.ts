@@ -7,5 +7,5 @@ export interface BasketData {
 export interface BasketSettings {
   items: string;
   price: string;
-  basketButton: string;
+  button: string;
 }

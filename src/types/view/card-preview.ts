@@ -13,6 +13,6 @@ export interface CardPreviewSettings {
   category: string;
   title: string;
   text: string;
-  price: number;
-  addButton: string;
+  price: string;
+  button: string;
 }

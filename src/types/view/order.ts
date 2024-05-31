@@ -6,8 +6,6 @@ export interface OrderData {
 }
 
 export interface OrderSettings {
-  cardPayment: string;
-  cashPayment: string;
-  address: string;
-  nextButton: string;
+  cardButton: string;
+  cashButton: string;
 }

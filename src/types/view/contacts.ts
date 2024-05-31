@@ -6,8 +6,7 @@ export interface ContactsData {
   phone: string
 }
 
-export interface ContactsSettings {
-  email: string;
-  phone: string;
-  payButton: string;
-}
+// export interface ContactsSettings {
+//   email: string;
+//   phone: string;
+// }

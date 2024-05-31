@@ -1,8 +1,9 @@
-import {IProduct, ProductIdType} from "./entity";
+import {IOrder, IProduct, ProductIdType} from "./entity";
 
 export interface ICatalogModel {
   products: Array<IProduct>
-  setProducts: (items: Array<IProduct>) => void
+  loadProducts: () => void
+  // setProducts: (items: Array<IProduct>) => void
   getProduct: (id: ProductIdType) => IProduct | null
 }
 
@@ -25,6 +26,7 @@ export interface IBuyerInfo {
 
 export interface IOrderModel {
   buyer: IBuyerInfo
+  createOrder: (order: IOrder) => Promise<boolean>
   changeBuyerField: <K extends keyof IBuyerInfo>(key: K, value: IBuyerInfo[K]) => void
   reset: () => void
 }

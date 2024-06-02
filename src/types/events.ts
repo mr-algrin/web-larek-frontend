@@ -5,7 +5,8 @@ import {IBuyerInfo} from "./model";
 // Данные события используются для коммуникации между архитектруными слоями приложения
 
 export enum ModelEvents {
-  CatalogUpdated = 'model:catalog-updated'
+  CatalogUpdated = 'model:catalog-updated',
+  BasketUpdated = 'model:basket-updated'
 }
 
 export type CatalogUpdateEvent = {
@@ -31,10 +32,11 @@ export enum UIEvents {
   BasketAddProduct = 'ui:basket-add',
   BasketRemoveProduct = 'ui:basket-remove',
   BasketOpen = 'ui:basket-open',
-  OrderInfoChanged = 'ui:order-info-changed',
-  OrderInfoComplete = 'ui:order-info-complete',
-  ContactsInfoChanged = 'ui:contacts-info-changed',
-  ContactsInfoComplete = 'ui:contacts-info-complete'
+  BasketCreateOrder = 'ui:basket-create-order',
+  OrderFormChanged = 'ui:order-form-changed',
+  OrderFormComplete = 'ui:order-form-complete',
+  ContactsFormChanged = 'ui:contacts-form-changed',
+  ContactsFormComplete = 'ui:contacts-form-complete'
 }
 
 export type BuyerInfoChangeEvent = {

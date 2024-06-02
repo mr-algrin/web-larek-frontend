@@ -1,11 +1,14 @@
 import {IComponent} from "../../types";
+import {IEvents} from "./events";
 
 
 export abstract class Component<T extends  HTMLElement, D extends object, S> implements IComponent<T, D>{
   protected readonly _container: T;
   protected readonly _settings: S;
+  protected readonly _events: IEvents;
 
-  protected constructor(container: T, settings?: S) {
+  protected constructor(events: IEvents, container: T, settings?: S) {
+    this._events = events;
     this._container = container;
     this._settings = Object.assign({}, settings);
   }

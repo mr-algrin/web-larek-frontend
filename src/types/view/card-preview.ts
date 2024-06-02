@@ -3,7 +3,8 @@
 export interface CardPreviewData {
   id: string;
   title: string;
-  text: string;
+  category: string;
+  description: string;
   image: string;
   price: number;
 }

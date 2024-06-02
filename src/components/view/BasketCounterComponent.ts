@@ -8,11 +8,11 @@ export class BasketCounterComponent extends Component<HTMLButtonElement, BasketC
   protected _counter: HTMLSpanElement;
 
   constructor(events: IEvents,  container: HTMLButtonElement, settings: BasketCounterSettings) {
-    super(container, settings);
+    super(events, container, settings);
 
     this._counter = ensureElement<HTMLSpanElement>(settings.counter, this._container);
     this._container.addEventListener('click', () => {
-      events.emit(UIEvents.BasketOpen);
+      this._events.emit(UIEvents.BasketOpen);
     });
   }
 
@@ -20,5 +20,4 @@ export class BasketCounterComponent extends Component<HTMLButtonElement, BasketC
     this.setText(this._counter, String(data.count));
     return this._container;
   }
-
 }

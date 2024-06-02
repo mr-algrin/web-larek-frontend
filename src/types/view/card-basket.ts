@@ -8,7 +8,7 @@ export interface CardBasketData {
 }
 
 export interface CardBasketSettings{
-  index: string;
+  itemIndex: string;
   title: string;
   price: string;
   deleteButton: string;

@@ -6,7 +6,8 @@ import {
   ContactsData,
   OrderData,
   SuccessData,
-  CardPreviewData
+  CardPreviewData,
+  FormData
 } from "./view";
 
 export interface IComponent<T extends HTMLElement, D extends object> {
@@ -22,6 +23,12 @@ export interface IModal extends IComponent<HTMLDivElement, ModalData> {
   setContent: (content: HTMLElement) => void
 }
 
+export interface IForm<D> extends IComponent<HTMLFormElement, FormData<D>> {
+  setInputValue: (name: string, value: string) => void
+  setError: (error: string) => void
+  setValid: (valid: boolean) => void
+}
+
 export enum ModalState {
   preview,
   basket,
@@ -35,6 +42,6 @@ export type ModalComponentsMap = {
   [ModalState.preview]: IComponent<HTMLDivElement, CardPreviewData>
   [ModalState.basket]: IComponent<HTMLDivElement, BasketData>
   [ModalState.success]: IComponent<HTMLDivElement, SuccessData>
-  [ModalState.contacts]: IComponent<HTMLFormElement, ContactsData>
-  [ModalState.order]: IComponent<HTMLFormElement, OrderData>
+  [ModalState.contacts]: IForm<ContactsData>
+  [ModalState.order]: IForm<OrderData>
 }

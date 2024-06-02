@@ -3,7 +3,6 @@ import {IOrder, IProduct, ProductIdType} from "./entity";
 export interface ICatalogModel {
   products: Array<IProduct>
   loadProducts: () => void
-  // setProducts: (items: Array<IProduct>) => void
   getProduct: (id: ProductIdType) => IProduct | null
 }
 
@@ -11,7 +10,9 @@ export interface IBasketModel {
   products: Map<ProductIdType, IProduct>
   addProduct: (product: IProduct) => void
   removeProduct: (id: ProductIdType) => void
+  getProducts: () => Array<IProduct>
   getTotal: () => number
+  getTotalPrice: () => number
   clear: () => void
 }
 

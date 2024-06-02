@@ -20,8 +20,11 @@ export interface IApplication {
   init: () => void
   updateBasketCounter: () => void
   updateCatalog: () => void
+  updateBasket: () => void
   openBasket: () => void
   selectProduct: (evt: ProductEvent) => void
   addProductToBasket: (evt: ProductEvent) => void
   removeProductFromBasket: (evt: ProductEvent) => void
+  createOrder: () => void
+  closeModal: () => void
 }

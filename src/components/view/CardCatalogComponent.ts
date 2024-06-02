@@ -1,7 +1,8 @@
 import {Component} from "../base/component";
+import {IEvents} from "../base/events";
+
 import {CardCatalogData, CardCatalogSettings, ProductEvent, UIEvents} from "../../types";
 import {ensureElement, priceLabel} from "../../utils/utils";
-import {IEvents} from "../base/events";
 
 
 export class CardCatalogComponent extends Component<HTMLButtonElement, CardCatalogData, CardCatalogSettings> {
@@ -12,7 +13,7 @@ export class CardCatalogComponent extends Component<HTMLButtonElement, CardCatal
   protected readonly _price: HTMLSpanElement;
 
   constructor(events: IEvents, container: HTMLButtonElement, settings: CardCatalogSettings) {
-    super(container, settings);
+    super(events, container, settings);
 
     // инициализация элементов карточки
     this._category = ensureElement<HTMLSpanElement>(settings.category, this._container);
@@ -22,7 +23,7 @@ export class CardCatalogComponent extends Component<HTMLButtonElement, CardCatal
 
     // установка обработчиков
     this._container.addEventListener('click', () => {
-      events.emit<ProductEvent>(UIEvents.ProductSelect, {id: this._cardId});
+      this._events.emit<ProductEvent>(UIEvents.ProductSelect, {id: this._cardId});
     })
   }
 
@@ -31,7 +32,7 @@ export class CardCatalogComponent extends Component<HTMLButtonElement, CardCatal
     this.setText(this._category, data.category);
     this.setImage(this._image, data.image, `Изображение ${data.title}`);
     this.setText(this._title, data.title);
-    this.setText(this._price, priceLabel(data.price || 0));
+    this.setText(this._price, data.price ? priceLabel(data.price || 0) : 'Бесценно');
     return this._container;
   }
 }

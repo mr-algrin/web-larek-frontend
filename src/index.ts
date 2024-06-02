@@ -38,14 +38,14 @@ const catalogModel = new CatalogModel(events, productApiClient);
 const orderModel = new OrderModel(events, orderApiClient);
 
 // Инициализация контейнерных компонентов
-const gallery = new GalleryComponent(ensureElement<HTMLElement>('.gallery'));
+const gallery = new GalleryComponent(events, ensureElement<HTMLElement>('.gallery'));
 const basketCounter = new BasketCounterComponent(events, ensureElement<HTMLButtonElement>('.header__basket'), settings.basketCounter);
 
 // инициализация модальных компонентов
 const modal = new Modal(events, ensureElement<HTMLDivElement>(settings.modal.container), settings.modal);
 const modalComponents: ModalComponentsMap = {
   [ModalState.basket]: new BasketComponent(events, cloneTemplate<HTMLDivElement>(templates.basketTemplate), settings.basket),
-  [ModalState.success]: new SuccessComponent(cloneTemplate<HTMLDivElement>(templates.successTemplate), settings.success),
+  [ModalState.success]: new SuccessComponent(events,cloneTemplate<HTMLDivElement>(templates.successTemplate), settings.success),
   [ModalState.preview]: new CardPreviewComponent(events, cloneTemplate<HTMLDivElement>(templates.cardPreviewTemplate), settings.preview),
   [ModalState.contacts]: new ContactsForm(events, cloneTemplate<HTMLFormElement>(templates.contactsTemplate), settings.form),
   [ModalState.order]: new OrderForm(events, cloneTemplate<HTMLFormElement>(templates.orderTemplate), {...settings.form, ...settings.orderForm})

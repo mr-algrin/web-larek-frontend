@@ -13,7 +13,7 @@ export const settings = {
   },
   form: {
     error: '.form__errors',
-    button: '.button'
+    button: 'button[type="submit"]'
   },
   orderForm: {
     cardButton: 'button[name="card"]',
@@ -33,6 +33,12 @@ export const settings = {
     title: '.card__title',
     image: '.card__image',
     price: '.card__price'
+  },
+  cardBasket: {
+    itemIndex: '.basket__item-index',
+    title: '.card__title',
+    price: '.card__price',
+    deleteButton: '.basket__item-delete'
   },
   basket: {
     items: '.basket__list',

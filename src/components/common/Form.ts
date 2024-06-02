@@ -1,18 +1,16 @@
 import {IEvents} from "../base/events";
 import {Component} from "../base/component";
-import {FormData, FormSettings} from "../../types";
+import {FormData, FormSettings, IForm} from "../../types";
 import {ensureAllElements, ensureElement} from "../../utils/utils";
 
 
-export abstract class Form<D, S> extends Component<HTMLFormElement, FormData<D>, FormSettings<S>>{
+export abstract class Form<D, S> extends Component<HTMLFormElement, FormData<D>, FormSettings<S>> implements IForm<D>{
   protected readonly _errors: HTMLSpanElement;
   protected readonly _submitButton: HTMLButtonElement;
-  protected readonly _events: IEvents;
   private readonly _inputs: Map<string, HTMLInputElement> = new Map();
 
   protected constructor(events: IEvents, container: HTMLFormElement, settings: FormSettings<S>) {
-    super(container, settings);
-    this._events = events;
+    super(events, container, settings);
 
     const inputs = ensureAllElements<HTMLInputElement>('input', this._container);
     inputs.map((input) => {

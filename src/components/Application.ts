@@ -1,5 +1,8 @@
 import {
+  BasketUpdateEvent,
+  BuyerInfoUpdateEvent,
   CardBasketData,
+  CatalogUpdateEvent,
   IApplication,
   IBasketCounterComponent,
   IBasketModel,
@@ -51,24 +54,25 @@ export class Application implements IApplication {
 
   init(): void {
     // Установка обработчиков событий
-    this._events.on(ModelEvents.CatalogUpdated, this.updateCatalog.bind(this));
-    this._events.on(ModelEvents.BasketUpdated, this.updateBasket.bind(this));
-    this._events.on(UIEvents.ModalClose, this.closeModal.bind(this));
-    this._events.on(UIEvents.BasketOpen, this.openBasket.bind(this));
+    this._events.on<CatalogUpdateEvent>(ModelEvents.CatalogUpdated, this.updateCatalog.bind(this));
+    this._events.on<BasketUpdateEvent>(ModelEvents.BasketUpdated, this.updateBasket.bind(this));
+    this._events.on<BuyerInfoUpdateEvent>(ModelEvents.BuyerInfoUpdated, this.updateBuyerInfo.bind(this));
     this._events.on<ProductEvent>(UIEvents.ProductSelect, this.selectProduct.bind(this));
     this._events.on<ProductEvent>(UIEvents.BasketAddProduct, this.addProductToBasket.bind(this));
     this._events.on<ProductEvent>(UIEvents.BasketRemoveProduct, this.removeProductFromBasket.bind(this));
     this._events.on(UIEvents.BasketCreateOrder, this.createOrder.bind(this));
+    this._events.on(UIEvents.BasketOpen, this.openBasket.bind(this));
+    this._events.on(UIEvents.ModalClose, this.closeModal.bind(this));
     // Получение данных с сервера
     this.catalogModel.loadProducts();
   }
 
-  updateBasketCounter() {
-    this.basketCounter.render({count: this.basketModel.getTotal()});
+  updateBasketCounter(count: number) {
+    this.basketCounter.render({count: count});
   }
 
-  updateCatalog() {
-    const items = this.catalogModel.products.map(item => {
+  updateCatalog(evt: CatalogUpdateEvent) {
+    const items = evt.products.map(item => {
       const element = cloneTemplate<HTMLButtonElement>(templates.cardCatalogTemplate);
       const card = new CardCatalogComponent(this._events, element, settings.cardCatalog);
       return card.render(item);
@@ -76,15 +80,19 @@ export class Application implements IApplication {
     this.gallery.render({items: items});
   }
 
-  updateBasket() {
-    this.updateBasketCounter();
+  updateBasket(evt: BasketUpdateEvent) {
+    this.updateBasketCounter(evt.itemsCount);
     if (this._modalState === ModalState.basket) {
       // TODO: move code to function renderBasket
       const products = this.basketModel.getProducts();
-      const totalPrice = this.basketModel.getTotalPrice();
+      // const totalPrice = this.basketModel.getTotalPrice();
       const items = products.map((product, index) => renderCardBasket(this._events, {...product, index: index + 1}))
-      this.renderModal(this.modalComponents[ModalState.basket].render({items: items, price: totalPrice}));
+      this.renderModal(this.modalComponents[ModalState.basket].render({items: items, price: evt.totalPrice}));
     }
+  }
+
+  updateBuyerInfo(evt: BuyerInfoUpdateEvent) {
+    //
   }
 
   openBasket(): void {

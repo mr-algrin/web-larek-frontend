@@ -1,4 +1,4 @@
-import {IBasketModel, IProduct, ModelEvents, ProductIdType} from "../../types";
+import {BasketUpdateEvent, IBasketModel, IProduct, ModelEvents, ProductIdType} from "../../types";
 import {IEvents} from "../base/events";
 import {Model} from "../base/model";
 
@@ -9,21 +9,25 @@ export class BasketModel extends Model implements IBasketModel {
     super(events);
   }
 
-  get products(): Map<ProductIdType, IProduct> {
-    return this._products;
-  };
+  private updateBasket() {
+    this.changed<BasketUpdateEvent>(ModelEvents.BasketUpdated, {
+      totalPrice: this.getTotalPrice(),
+      itemsCount: this.getTotal(),
+      products: this.getProducts()
+    });
+  }
 
   addProduct(product: IProduct): void {
     if (!this._products.has(product.id)) {
       this._products.set(product.id, product);
-      this.changed(ModelEvents.BasketUpdated);
+      this.updateBasket();
     }
   }
 
   removeProduct(id: ProductIdType): void {
     if (this._products.has(id)) {
       this._products.delete(id);
-      this.changed(ModelEvents.BasketUpdated);
+      this.updateBasket();
     }
   }
 

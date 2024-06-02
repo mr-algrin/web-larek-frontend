@@ -6,25 +6,32 @@ import {IBuyerInfo} from "./model";
 
 export enum ModelEvents {
   CatalogUpdated = 'model:catalog-updated',
-  BasketUpdated = 'model:basket-updated'
+  BasketUpdated = 'model:basket-updated',
+  BuyerInfoUpdated = 'model:buyer-info-updated'
 }
 
 export type CatalogUpdateEvent = {
   products: Array<IProduct>
 }
 
-export enum  OrderEventsEnum {
-  OrderPrepared = 'order:prepared',
-  OrderCreated = 'order:created'
+export type BasketUpdateEvent = {
+  products: Array<IProduct>
+  itemsCount: number
+  totalPrice: number
 }
 
-export type OrderPreparedEvent = {
-  order: IOrder
+export type BuyerInfoUpdateEvent = {
+  buyer: IBuyerInfo
 }
 
-export type OrderCreatedEvent = {
-  result: IOrderResult
-}
+
+// export type OrderPreparedEvent = {
+//   order: IOrder
+// }
+//
+// export type OrderCreatedEvent = {
+//   result: IOrderResult
+// }
 
 export enum UIEvents {
   ModalClose = 'ui:modal-close',
@@ -39,10 +46,11 @@ export enum UIEvents {
   ContactsFormComplete = 'ui:contacts-form-complete'
 }
 
-export type BuyerInfoChangeEvent = {
-  buyer: IBuyerInfo
-}
-
 export type ProductEvent = {
   id: ProductIdType
+}
+
+export type FormFieldChangeEvent<T> = {
+  key: string;
+  value: T
 }

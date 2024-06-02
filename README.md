@@ -10,6 +10,7 @@
 Важные файлы:
 - src/pages/index.html — HTML-файл главной страницы
 - src/types — Директория с типами
+- src/components/application.ts - класс Application - реализующий бизнес логику приложения
 - src/index.ts — точка входа приложения
 - src/styles/styles.scss — корневой файл стилей
 - src/utils/constants.ts — файл с константами
@@ -41,7 +42,25 @@ npm run build
 yarn build
 ```
 
-## Компоненты модели данных (бизнес-логика)
+## Архитекрута
+
+В качестве основы для реализации данного приложения была выбрана архитектура Model-View-Presenter. Диаграмма представленная ниже отображает процессы взаимодействия между архитектурными слоями приложения.
+
+Слой `Model` реализует хранилище данных для всего приложения, а также предоставляет методы для управления этими данными или выборки.
+
+Слой `View` реализует визуальные компоненты для отображения данных из моделей и взаимодействия с пользователем.
+
+Слой `Presenter` является связующим звеном между слоями Model и View, в данном слое реализуется вся функции бизнес логики:
+- Получение данных из моделей
+- Изменение данных в моделях через предоставляемые методы
+- Обработка событий пользователя
+- Перерисовка компонентов пользовательского интерфейса
+
+UML диаграмма архитектуры
+
+![UML диаграмма архитектуры](./images/architecture-diagram.png)
+
+## Компоненты модели данных (MODEL)
 
 Описаны интерфейсы для получения данных с сервера, а также модели состояний для хранения данных и выполнения действий над ними.
 
@@ -93,7 +112,33 @@ export interface IBuyerInfo {
 }
 ```
 
-## Компоненты отображения
+## Компоненты отображения (VIEW)
+
+Для реализации слоя отображения данных был описан ряд интерфейсов и реализованы базовые классы компонентов:
+
+- `IComponent<T extends HTMLElement, D extends object, S>` - generic интерфейс базового компонента, в качестве аргументов принимает:
+- `IModal` - интерфейс для реализации компонента модального окна, расширяет интерфейс `IComponent`
+- `IForm` - интерфейс для реализации компонента формы, расширяет интерфейс `IComponent`
+
+Для данных интерфейсов, был реализован набор базовых классов:
+
+- Класс `Component` - это базовый абстрактный класс, который является основным для всех компонентов интерфейса, реализует интерфейс `IComponent`
+- Класс `Modal` - компонент модального окна, наследуется от базового класса `Component`, а также реализует интерфейс `IModal`
+- Класс `Form` - абстрактный класс формы, наследуется от базового класса `Component`, а также реализует интерфейс `IForm`
+
+В директории `src/components/view` был реализован набор View компонентов:
+
+- `GalleryComponent` - компонент галерии товаров
+- `BasketComponent` - компонент для отображения добавленных в корзину товаров
+- `BasketCounterComponent` - компонент значка и счётчика корзины
+- `CardBasketComponent` - компонент карточки товара добавленного в корзину
+- `CardCatalogComponent` - компонент карточки товара, отображаемой в галерее
+- `CardPreviewComponent` - компонент карточки товара, отображаемого в модальном окне
+- `OrderForm` - компонент формы, для выбора способа платежа и указания адреса доставки
+- `ContactsForm` - компонент формы, для указания контактных данных
+- `SuccessComponent` - компонент подтверждения оформленного заказа
+
+Экземпляры классов большинства всех реализованных View компонентов создаются во время инициализации приложения, кроме компонентов `CardBasket` и `CardCatalog`, данные экземпляры создаются динамически во время отрисовки галерии или корзины товаров
 
 В директории `src/types/view` собраны интерфейсы данных и настроек компонентов отображения:
 
@@ -105,13 +150,81 @@ export interface IBuyerInfo {
 - `OrderData` - описывает данные необходимые для отображения способа оплаты и адреса доставки при создании заказа
 - `SuccessData` - описывает данные необходимые для отображения после успешного офрмления заказа
 
-## Компоненты представления
+UML диаграмма классов
 
-В файле `src/types/application.ts` описан интерфейс `IApplication`, который реализует глобальное состояние всего приложение и связывает компоненты.
-Помимо этого в файле `src/types/events.ts` были добавлены перечисления (enum) для различных типов событий, а также интерфейсы событий, предназаначенные для передачи данных между слоями архитектуры:
+![UML диаграмма](./images/class-diagram.png)
 
-- `CatalogUpdateEvent` - событие, генерируемое после того, как каталог товаров был загружен с сервера
-- `OrderPreparedEvent` - событие, генерируемое после успешного заполнения всех форм для создания заказа
-- `OrderCreatedEvent` - событие, генерируемое после успешного создания нового заказа на сервере
-- `BasketProductEvent` - событие, генерируемое при добавлении товара в корзину или удалении из него
-- `BuyerInfoChangeEvent` - событие, генерируемое при изменении данных необходимых для создания заказа
+## Компоненты представления и бизнес-логики (Presenter)
+
+Слой `Presenter` в текущей реализации приложения по сути представлен одним классом `Application`, данный класс реализует интерфейс `IApplication`.
+
+В файле `src/types/application.ts` описан интерфейс `IApplication`, который реализует глобальное состояние всего приложение и связывает компоненты слоёв `View` и `Model`.
+Данный интерфейс описывает методы и свойства, которые должны быть реализованы в классе.
+
+```ts
+export interface IApplication {
+  // модели
+  basketModel: IBasketModel
+  catalogModel: ICatalogModel
+  orderModel: IOrderModel
+
+  // контейнерные компоненты
+  gallery: IGalleryComponent;
+  basketCounter: IBasketCounterComponent;
+
+  // модальные компоненты
+  modal: IModal;
+  modalComponents: ModalComponentsMap;
+
+  init: () => void
+  openBasket: () => void
+  updateBasketCounter: (count: number) => void
+  updateCatalog: (evt: CatalogUpdateEvent) => void
+  updateBasket: (evt: BasketUpdateEvent) => void
+  updateBuyerInfo: (evt: BuyerInfoUpdateEvent) => void
+  selectProduct: (evt: ProductEvent) => void
+  addProductToBasket: (evt: ProductEvent) => void
+  removeProductFromBasket: (evt: ProductEvent) => void
+  createOrder: () => void
+  closeModal: () => void
+}
+
+```
+
+Одной из главных функцией класса `Application` является обработка событий, генерируемых в слоях `View` и `Model`. Данные передаются через экземпляр класса `EventEmitter`.
+Перечисления (enum) событий были описаны в файле `src/types/events.ts`
+
+```ts
+export enum ModelEvents {
+  CatalogUpdated = 'model:catalog-updated',
+  BasketUpdated = 'model:basket-updated',
+  BuyerInfoUpdated = 'model:buyer-info-updated'
+}
+```
+
+```ts
+export enum UIEvents {
+  ModalClose = 'ui:modal-close',
+  ProductSelect = 'ui:product-select',
+  BasketAddProduct = 'ui:basket-add',
+  BasketRemoveProduct = 'ui:basket-remove',
+  BasketOpen = 'ui:basket-open',
+  BasketCreateOrder = 'ui:basket-create-order',
+  OrderFormChanged = 'ui:order-form-changed',
+  OrderFormComplete = 'ui:order-form-complete',
+  ContactsFormChanged = 'ui:contacts-form-changed',
+  ContactsFormComplete = 'ui:contacts-form-complete'
+}
+```
+
+
+Помимо перечислений событий, также описаны интерфейсы для нужных событий:
+
+- `CatalogUpdateEvent` - событие генерируемое при изменении модели данных катагола
+- `BasketUpdateEvent` - событие генерируемое при изменении модели корзины товаров
+- `BuyerInfoUpdateEvent` - событие генерируеме при изменении данных для создания заказа
+- `ProductEvent` - событие генерируемое при выделение карточки товара, добавлении или удалении из корзины
+- `FormFieldChangeEvent<T>` - событие генерируемое при изменении полей формы
+
+
+### P.S. Архитекрута реализована, функционал только частично реализован

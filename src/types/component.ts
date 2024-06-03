@@ -7,7 +7,7 @@ import {
   OrderData,
   SuccessData,
   CardPreviewData,
-  FormData
+  FormData, PageData
 } from "./view";
 
 export interface IComponent<T extends HTMLElement, D extends object> {
@@ -27,6 +27,13 @@ export interface IForm<D> extends IComponent<HTMLFormElement, FormData<D>> {
   setInputValue: (name: string, value: string) => void
   setError: (error: string) => void
   setValid: (valid: boolean) => void
+}
+
+
+export interface IPage extends IComponent<HTMLDivElement, PageData> {
+  setLocked: (lock: boolean) => void,
+  setGallery: (items: Array<HTMLButtonElement>) => void
+  setCounter: (count: number) => void
 }
 
 export enum ModalState {

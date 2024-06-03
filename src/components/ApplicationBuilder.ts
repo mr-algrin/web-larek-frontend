@@ -1,14 +1,12 @@
 import {Application} from "./Application";
 import {IEvents} from "./base/events";
 import {
-  IBasketCounterComponent,
-  IGalleryComponent,
   IApplication,
   IBasketModel,
   ICatalogModel,
   IModal,
   IOrderModel,
-  ModalComponentsMap
+  ModalComponentsMap, IPage
 } from "../types";
 
 
@@ -27,9 +25,8 @@ export class ApplicationBuilder {
     return this;
   }
 
-  setViews(gallery: IGalleryComponent, basketCounter: IBasketCounterComponent) {
-    this.application.gallery = gallery;
-    this.application.basketCounter = basketCounter;
+  setPages(page: IPage) {
+    this.application.page = page;
     return this;
   }
 

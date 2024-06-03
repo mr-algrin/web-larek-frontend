@@ -1,5 +1,5 @@
 import {IBasketModel, ICatalogModel, IOrderModel} from "./model";
-import {IBasketCounterComponent, IGalleryComponent, IModal, ModalComponentsMap} from "./component";
+import {IModal, IPage, ModalComponentsMap} from "./component";
 import {BasketUpdateEvent, BuyerInfoUpdateEvent, CatalogUpdateEvent, ProductEvent} from "./events";
 
 // Класс контроллера
@@ -9,9 +9,8 @@ export interface IApplication {
   catalogModel: ICatalogModel
   orderModel: IOrderModel
 
-  // контейнерные компоненты
-  gallery: IGalleryComponent;
-  basketCounter: IBasketCounterComponent;
+  // компонент страницы
+  page: IPage;
 
   // модальные компоненты
   modal: IModal;

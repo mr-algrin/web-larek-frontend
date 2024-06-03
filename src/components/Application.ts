@@ -4,12 +4,10 @@ import {
   CardBasketData,
   CatalogUpdateEvent,
   IApplication,
-  IBasketCounterComponent,
   IBasketModel,
   ICatalogModel,
-  IGalleryComponent,
   IModal,
-  IOrderModel,
+  IOrderModel, IPage,
   ModalComponentsMap,
   ModalState,
   ModelEvents,
@@ -38,8 +36,9 @@ export class Application implements IApplication {
   catalogModel: ICatalogModel;
   orderModel: IOrderModel;
 
-  gallery: IGalleryComponent;
-  basketCounter: IBasketCounterComponent;
+  // gallery: IGalleryComponent;
+  // basketCounter: IBasketCounterComponent;
+  page: IPage;
   modal: IModal;
   modalComponents: ModalComponentsMap;
 
@@ -48,6 +47,7 @@ export class Application implements IApplication {
   }
 
   private renderModal(content: HTMLElement) {
+    this.page.setLocked(true);
     this.modal.render({content: content});
     this.modal.open();
   }
@@ -68,7 +68,8 @@ export class Application implements IApplication {
   }
 
   updateBasketCounter(count: number) {
-    this.basketCounter.render({count: count});
+    this.page.setCounter(count);
+    // this.basketCounter.render({count: count});
   }
 
   updateCatalog(evt: CatalogUpdateEvent) {
@@ -77,7 +78,7 @@ export class Application implements IApplication {
       const card = new CardCatalogComponent(this._events, element, settings.cardCatalog);
       return card.render(item);
     });
-    this.gallery.render({items: items});
+    this.page.setGallery(items);
   }
 
   updateBasket(evt: BasketUpdateEvent) {
@@ -136,6 +137,7 @@ export class Application implements IApplication {
 
   closeModal() {
     this._modalState = null;
-    this.modal.close()
+    this.modal.close();
+    this.page.setLocked(false);
   }
 }

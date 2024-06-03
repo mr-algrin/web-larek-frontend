@@ -14,8 +14,6 @@ import {cloneTemplate, ensureElement} from "./utils/utils";
 
 import {Modal} from "./components/common/Modal";
 import {OrderModel} from "./components/model/OrderModel";
-import {GalleryComponent} from "./components/view/GalleryComponent";
-import {BasketCounterComponent} from "./components/view/BasketCounterComponent";
 import {BasketComponent} from "./components/view/BasketComponent";
 
 import * as templates from './components/templates'
@@ -23,6 +21,7 @@ import {SuccessComponent} from "./components/view/SuccessComponent";
 import {CardPreviewComponent} from "./components/view/CardPreviewComponent";
 import {ContactsForm} from "./components/view/ContactsForm";
 import {OrderForm} from "./components/view/OrderForm";
+import {PageComponent} from "./components/view/PageComponent";
 
 
 // Инициализация шины данных
@@ -38,8 +37,7 @@ const catalogModel = new CatalogModel(events, productApiClient);
 const orderModel = new OrderModel(events, orderApiClient);
 
 // Инициализация контейнерных компонентов
-const gallery = new GalleryComponent(events, ensureElement<HTMLElement>('.gallery'));
-const basketCounter = new BasketCounterComponent(events, ensureElement<HTMLButtonElement>('.header__basket'), settings.basketCounter);
+const page = new PageComponent(events, ensureElement<HTMLDivElement>('.page'), settings.page);
 
 // инициализация модальных компонентов
 const modal = new Modal(events, ensureElement<HTMLDivElement>(settings.modal.container), settings.modal);
@@ -54,7 +52,7 @@ const modalComponents: ModalComponentsMap = {
 // Сборка приложения
 const application: IApplication =
   new ApplicationBuilder(events)
-    .setViews(gallery, basketCounter)
+    .setPages(page)
     .setModals(modal, modalComponents)
     .setModels(basketModel, catalogModel, orderModel)
     .build()

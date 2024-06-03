@@ -25,8 +25,12 @@ export const settings = {
     content: '.modal__content',
     activeClass: 'modal_active',
   },
-  basketCounter: {
-    counter: '.header__basket-counter'
+  page: {
+    wrapper: '.page__wrapper',
+    lockedClass: 'page__wrapper_locked',
+    basketCounter: '.header__basket-counter',
+    basketButton: '.header__basket',
+    gallery: '.gallery',
   },
   cardCatalog: {
     category: '.card__category',

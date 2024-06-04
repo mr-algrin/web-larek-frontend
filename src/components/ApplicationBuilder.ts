@@ -6,9 +6,9 @@ import {
   ICatalogModel,
   IModal,
   IOrderModel,
-  ModalComponentsMap, IPage
+  ModalComponentsMap, IPage, OrderData, ContactsData
 } from "../types";
-
+import {IFormValidator} from "../utils/validator";
 
 
 export class ApplicationBuilder {
@@ -33,6 +33,12 @@ export class ApplicationBuilder {
   setModals(modal: IModal, modalComponents: ModalComponentsMap) {
     this.application.modal = modal;
     this.application.modalComponents = modalComponents;
+    return this;
+  }
+
+  setValidators(orderValidator: IFormValidator<OrderData>, contactsValidator: IFormValidator<ContactsData>) {
+    this.application.orderValidator = orderValidator;
+    this.application.contactsValidator = contactsValidator;
     return this;
   }
 

@@ -3,14 +3,17 @@ import {
   BuyerInfoUpdateEvent,
   CardBasketData,
   CatalogUpdateEvent,
+  ContactsData, FormFieldChangeEvent,
   IApplication,
-  IBasketModel,
+  IBasketModel, IBuyerInfo,
   ICatalogModel,
   IModal,
-  IOrderModel, IPage,
+  IOrderModel,
+  IPage,
   ModalComponentsMap,
   ModalState,
   ModelEvents,
+  OrderData, PaymentType,
   ProductEvent,
   UIEvents
 } from '../types'
@@ -22,6 +25,7 @@ import * as templates from "./templates";
 
 import {CardCatalogComponent} from "./view/CardCatalogComponent";
 import {CardBasketComponent} from "./view/CardBasketComponent";
+import {IFormValidator} from "../utils/validator";
 
 const renderCardBasket = (events: IEvents, data: CardBasketData) => {
   const container = cloneTemplate<HTMLLIElement>(templates.cardBasketTemplate);
@@ -36,11 +40,13 @@ export class Application implements IApplication {
   catalogModel: ICatalogModel;
   orderModel: IOrderModel;
 
-  // gallery: IGalleryComponent;
-  // basketCounter: IBasketCounterComponent;
   page: IPage;
+
   modal: IModal;
   modalComponents: ModalComponentsMap;
+
+  orderValidator: IFormValidator<OrderData>;
+  contactsValidator: IFormValidator<ContactsData>;
 
   constructor(events: IEvents) {
     this._events = events;
@@ -50,6 +56,10 @@ export class Application implements IApplication {
     this.page.setLocked(true);
     this.modal.render({content: content});
     this.modal.open();
+  }
+
+  private onInputChange(evt: FormFieldChangeEvent<string | PaymentType>) {
+    this.orderModel.changeBuyerField(evt.key as keyof IBuyerInfo, evt.value);
   }
 
   init(): void {
@@ -63,6 +73,8 @@ export class Application implements IApplication {
     this._events.on(UIEvents.BasketCreateOrder, this.createOrder.bind(this));
     this._events.on(UIEvents.BasketOpen, this.openBasket.bind(this));
     this._events.on(UIEvents.ModalClose, this.closeModal.bind(this));
+    this._events.on<FormFieldChangeEvent<string | PaymentType>>(UIEvents.OrderFormChanged, this.onInputChange.bind(this));
+
     // Получение данных с сервера
     this.catalogModel.loadProducts();
   }
@@ -93,7 +105,18 @@ export class Application implements IApplication {
   }
 
   updateBuyerInfo(evt: BuyerInfoUpdateEvent) {
-    //
+    if (this._modalState === ModalState.order) {
+      this.modalComponents[ModalState.order].render({
+        ...evt.buyer,
+        ...this.orderValidator.validate(evt.buyer)
+      });
+    }
+    else if (this._modalState === ModalState.contacts) {
+      this.renderModal(this.modalComponents[ModalState.contacts].render({
+        ...evt.buyer,
+        ...this.contactsValidator.validate(evt.buyer)
+      }))
+    }
   }
 
   openBasket(): void {
@@ -127,11 +150,9 @@ export class Application implements IApplication {
     if (this._modalState === ModalState.basket) {
       this._modalState = ModalState.order;
       this.renderModal(this.modalComponents[ModalState.order].render({
-        address: 'Test',
-        payment: 'card',
-        error: '',
-        valid: true
-      }))
+        ...this.orderModel.buyer,
+        ...this.orderValidator.validate(this.orderModel.buyer)
+      }));
     }
   }
 

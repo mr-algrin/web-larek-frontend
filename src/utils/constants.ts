@@ -17,7 +17,8 @@ export const settings = {
   },
   orderForm: {
     cardButton: 'button[name="card"]',
-    cashButton: 'button[name="cash"]'
+    cashButton: 'button[name="cash"]',
+    activeClass: 'button_alt-active'
   },
   modal: {
     container: '#modal-container',

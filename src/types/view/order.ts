@@ -8,4 +8,5 @@ export interface OrderData {
 export interface OrderSettings {
   cardButton: string;
   cashButton: string;
+  activeClass: string;
 }

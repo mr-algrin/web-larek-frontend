@@ -1,8 +1,10 @@
 
-export type FormData<T> = {
+export type FormState = {
   valid: boolean
   error: string
-} & T;
+}
+
+export type FormData<T> = FormState & T;
 
 export type FormSettings<T> = {
   error: string

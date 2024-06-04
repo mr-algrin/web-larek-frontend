@@ -22,6 +22,7 @@ import {CardPreviewComponent} from "./components/view/CardPreviewComponent";
 import {ContactsForm} from "./components/view/ContactsForm";
 import {OrderForm} from "./components/view/OrderForm";
 import {PageComponent} from "./components/view/PageComponent";
+import {ContactsFormValidator, OrderFormValidator} from "./utils/validator";
 
 
 // Инициализация шины данных
@@ -35,6 +36,10 @@ const orderApiClient = new OrderApi(API_URL);
 const basketModel = new BasketModel(events);
 const catalogModel = new CatalogModel(events, productApiClient);
 const orderModel = new OrderModel(events, orderApiClient);
+
+// валидаторы
+const orderValidator = new OrderFormValidator();
+const contactsValidator = new ContactsFormValidator();
 
 // Инициализация контейнерных компонентов
 const page = new PageComponent(events, ensureElement<HTMLDivElement>('.page'), settings.page);
@@ -55,6 +60,7 @@ const application: IApplication =
     .setPages(page)
     .setModals(modal, modalComponents)
     .setModels(basketModel, catalogModel, orderModel)
+    .setValidators(orderValidator, contactsValidator)
     .build()
 
 application.init();

@@ -1,7 +1,7 @@
 import {Model} from "../base/model";
 import {IEvents} from "../base/events";
 
-import {IBuyerInfo, IOrder, IOrderApi, IOrderModel} from "../../types";
+import {BuyerInfoUpdateEvent, IBuyerInfo, IOrder, IOrderApi, IOrderModel, ModelEvents} from "../../types";
 
 export class OrderModel extends Model implements IOrderModel {
   private _buyer: IBuyerInfo;
@@ -19,6 +19,7 @@ export class OrderModel extends Model implements IOrderModel {
 
   changeBuyerField<K extends keyof IBuyerInfo>(key: K, value: IBuyerInfo[K]): void {
     this._buyer[key] = value;
+    this.changed<BuyerInfoUpdateEvent>(ModelEvents.BuyerInfoUpdated, {buyer: {...this._buyer}});
   }
 
   reset(): void {

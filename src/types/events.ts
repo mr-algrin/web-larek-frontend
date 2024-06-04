@@ -50,7 +50,7 @@ export type ProductEvent = {
   id: ProductIdType
 }
 
-export type FormFieldChangeEvent<T> = {
+export type FormFieldChangeEvent<V> = {
   key: string;
-  value: T
+  value: V;
 }

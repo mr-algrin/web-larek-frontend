@@ -25,14 +25,6 @@ export type BuyerInfoUpdateEvent = {
 }
 
 
-// export type OrderPreparedEvent = {
-//   order: IOrder
-// }
-//
-// export type OrderCreatedEvent = {
-//   result: IOrderResult
-// }
-
 export enum UIEvents {
   ModalClose = 'ui:modal-close',
   ProductSelect = 'ui:product-select',
@@ -41,9 +33,10 @@ export enum UIEvents {
   BasketOpen = 'ui:basket-open',
   BasketCreateOrder = 'ui:basket-create-order',
   OrderFormChanged = 'ui:order-form-changed',
-  OrderFormComplete = 'ui:order-form-complete',
+  OrderFormCompleted = 'ui:order-form-completed',
   ContactsFormChanged = 'ui:contacts-form-changed',
-  ContactsFormComplete = 'ui:contacts-form-complete'
+  ContactsFormCompleted = 'ui:contacts-form-completed',
+  SuccessOrder = 'ui:success-order'
 }
 
 export type ProductEvent = {

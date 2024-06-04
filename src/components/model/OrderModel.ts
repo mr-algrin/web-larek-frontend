@@ -31,8 +31,8 @@ export class OrderModel extends Model implements IOrderModel {
     }
   }
 
-  createOrder(order: IOrder): Promise<boolean> {
+  createOrder(order: IOrder) {
     return this._orderApi.createOrder(order)
-      .then((result) => Promise.resolve(Boolean(result)));
+      .then((result) => Promise.resolve(result));
   }
 }

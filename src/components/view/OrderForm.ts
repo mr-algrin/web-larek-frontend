@@ -31,7 +31,7 @@ export class OrderForm extends Form<OrderData, OrderSettings> {
 
   protected onSubmit(evt: SubmitEvent) {
     evt.preventDefault();
-    this._events.emit(UIEvents.OrderFormComplete);
+    this._events.emit(UIEvents.OrderFormCompleted);
   }
 
   protected onInputChange(evt: InputEvent) {

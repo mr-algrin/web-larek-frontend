@@ -45,6 +45,7 @@ export class BasketModel extends Model implements IBasketModel {
 
   clear(): void {
     this._products.clear();
+    this.updateBasket();
   }
 
   getProducts(){

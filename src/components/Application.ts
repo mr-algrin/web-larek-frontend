@@ -3,9 +3,11 @@ import {
   BuyerInfoUpdateEvent,
   CardBasketData,
   CatalogUpdateEvent,
-  ContactsData, FormFieldChangeEvent,
+  ContactsData,
+  FormFieldChangeEvent,
   IApplication,
-  IBasketModel, IBuyerInfo,
+  IBasketModel,
+  IBuyerInfo,
   ICatalogModel,
   IModal,
   IOrderModel,
@@ -13,7 +15,8 @@ import {
   ModalComponentsMap,
   ModalState,
   ModelEvents,
-  OrderData, PaymentType,
+  OrderData,
+  PaymentType,
   ProductEvent,
   UIEvents
 } from '../types'
@@ -74,6 +77,10 @@ export class Application implements IApplication {
     this._events.on(UIEvents.BasketOpen, this.openBasket.bind(this));
     this._events.on(UIEvents.ModalClose, this.closeModal.bind(this));
     this._events.on<FormFieldChangeEvent<string | PaymentType>>(UIEvents.OrderFormChanged, this.onInputChange.bind(this));
+    this._events.on<FormFieldChangeEvent<string>>(UIEvents.ContactsFormChanged, this.onInputChange.bind(this));
+    this._events.on(UIEvents.OrderFormCompleted, this.orderFormCompleted.bind(this));
+    this._events.on(UIEvents.ContactsFormCompleted, this.contactsFormCompleted.bind(this));
+    this._events.on(UIEvents.SuccessOrder, this.closeModal.bind(this));
 
     // Получение данных с сервера
     this.catalogModel.loadProducts();
@@ -81,7 +88,6 @@ export class Application implements IApplication {
 
   updateBasketCounter(count: number) {
     this.page.setCounter(count);
-    // this.basketCounter.render({count: count});
   }
 
   updateCatalog(evt: CatalogUpdateEvent) {
@@ -96,11 +102,8 @@ export class Application implements IApplication {
   updateBasket(evt: BasketUpdateEvent) {
     this.updateBasketCounter(evt.itemsCount);
     if (this._modalState === ModalState.basket) {
-      // TODO: move code to function renderBasket
-      const products = this.basketModel.getProducts();
-      // const totalPrice = this.basketModel.getTotalPrice();
-      const items = products.map((product, index) => renderCardBasket(this._events, {...product, index: index + 1}))
-      this.renderModal(this.modalComponents[ModalState.basket].render({items: items, price: evt.totalPrice}));
+      const items = evt.products.map((product, index) => renderCardBasket(this._events, {...product, index: index + 1}))
+      this.modalComponents[ModalState.basket].render({items: items, price: evt.totalPrice})
     }
   }
 
@@ -112,10 +115,10 @@ export class Application implements IApplication {
       });
     }
     else if (this._modalState === ModalState.contacts) {
-      this.renderModal(this.modalComponents[ModalState.contacts].render({
+      this.modalComponents[ModalState.contacts].render({
         ...evt.buyer,
         ...this.contactsValidator.validate(evt.buyer)
-      }))
+      });
     }
   }
 
@@ -153,6 +156,38 @@ export class Application implements IApplication {
         ...this.orderModel.buyer,
         ...this.orderValidator.validate(this.orderModel.buyer)
       }));
+    }
+  }
+
+  private orderFormCompleted() {
+    if (this._modalState === ModalState.order && this.orderValidator.validate(this.orderModel.buyer).valid) {
+      this._modalState = ModalState.contacts;
+      this.renderModal(this.modalComponents[ModalState.contacts].render({
+        ...this.orderModel.buyer,
+        ...this.contactsValidator.validate(this.orderModel.buyer)
+      }));
+    }
+  }
+
+  private contactsFormCompleted() {
+    if (this._modalState === ModalState.contacts) {
+      const order = {
+        ...this.orderModel.buyer,
+        items: this.basketModel.getProducts().map(p => p.id),
+        total: this.basketModel.getTotalPrice(),
+      };
+      this.orderModel.createOrder(order)
+        .then((result) => {
+          this.basketModel.clear();
+          this.renderModal(this.modalComponents[ModalState.success].render({totalPrice: result.total}))
+        })
+        .catch(() => {
+          this.modalComponents[ModalState.contacts].render({
+            ...this.orderModel.buyer,
+            valid: true,
+            error: 'Не удалось создать заказ'
+          })
+        })
     }
   }
 

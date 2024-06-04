@@ -1,6 +1,4 @@
 import {
-  GalleryData,
-  BasketCounterData,
   ModalData,
   BasketData,
   ContactsData,
@@ -13,9 +11,6 @@ import {
 export interface IComponent<T extends HTMLElement, D extends object> {
   render(data?: D): T;
 }
-
-export type IGalleryComponent = IComponent<HTMLElement, GalleryData>
-export type IBasketCounterComponent = IComponent<HTMLButtonElement, BasketCounterData>
 
 export interface IModal extends IComponent<HTMLDivElement, ModalData> {
   open: () => void

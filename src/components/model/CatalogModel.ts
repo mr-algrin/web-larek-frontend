@@ -25,13 +25,7 @@ export class CatalogModel extends Model implements ICatalogModel {
       });
   }
 
-  getProduct(id: ProductIdType): IProduct | null {
-    let product = null;
-
-    this._products.forEach(item => {
-      if (item.id === id)
-        product = item;
-    })
-    return product;
+  getProduct(id: ProductIdType) {
+    return this._products.find(item => item.id === id)
   }
 }

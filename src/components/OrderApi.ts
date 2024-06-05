@@ -12,6 +12,6 @@ export class OrderApi extends Api implements IOrderApi {
   createOrder(order: IOrder): Promise<IOrderResult | null> {
     return this.post('/order', order)
       .then((data: IOrderResult) => data)
-      .catch(() => null);
+      .catch((error) => Promise.reject(error));
   }
 }

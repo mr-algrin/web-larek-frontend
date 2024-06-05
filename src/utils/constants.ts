@@ -33,6 +33,13 @@ export const settings = {
     basketButton: '.header__basket',
     gallery: '.gallery',
   },
+  card: {
+    category: '.card__category',
+    title: '.card__title',
+    image: '.card__image',
+    price: '.card__price',
+    description: '.card__text'
+  },
   cardCatalog: {
     category: '.card__category',
     title: '.card__title',
@@ -45,6 +52,14 @@ export const settings = {
     price: '.card__price',
     deleteButton: '.basket__item-delete'
   },
+  cardPreview: {
+    image: '.card__image',
+    category: '.card__category',
+    title: '.card__title',
+    text: '.card__text',
+    price: '.card__price',
+    button: '.card__button'
+  },
   basket: {
     items: '.basket__list',
     price: '.basket__price',
@@ -53,13 +68,5 @@ export const settings = {
   success: {
     description: '.order-success__description',
     successButton: '.order-success__close'
-  },
-  preview: {
-    image: '.card__image',
-    category: '.card__category',
-    title: '.card__title',
-    text: '.card__text',
-    price: '.card__price',
-    button: '.card__button'
   },
 };

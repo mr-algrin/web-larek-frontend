@@ -1,38 +1,24 @@
-import {Component} from "../base/component";
 import {IEvents} from "../base/events";
 
-import {CardCatalogData, CardCatalogSettings, ProductEvent, UIEvents} from "../../types";
-import {ensureElement, priceLabel} from "../../utils/utils";
+import {CardCatalogData, CardSettings, ProductEvent, UIEvents} from "../../types";
+import {CardComponent} from "./CardComponent";
 
 
-export class CardCatalogComponent extends Component<HTMLButtonElement, CardCatalogData, CardCatalogSettings> {
-  protected _cardId: string;
-  protected readonly _category: HTMLSpanElement;
-  protected readonly _image: HTMLImageElement;
-  protected readonly _title: HTMLElement;
-  protected readonly _price: HTMLSpanElement;
+export class CardCatalogComponent extends CardComponent<HTMLButtonElement, CardCatalogData, CardSettings> {
 
-  constructor(events: IEvents, container: HTMLButtonElement, settings: CardCatalogSettings) {
+  constructor(events: IEvents, container: HTMLButtonElement, settings: CardSettings) {
     super(events, container, settings);
 
-    // инициализация элементов карточки
-    this._category = ensureElement<HTMLSpanElement>(settings.category, this._container);
-    this._image = ensureElement<HTMLImageElement>(settings.image, this._container);
-    this._title = ensureElement<HTMLElement>(settings.title, this._container);
-    this._price = ensureElement<HTMLSpanElement>(settings.price, this._container);
-
-    // установка обработчиков
+    // установка обработчика
     this._container.addEventListener('click', () => {
-      this._events.emit<ProductEvent>(UIEvents.ProductSelect, {id: this._cardId});
+      this._events.emit<ProductEvent>(UIEvents.ProductSelect, {id: this._id});
     })
   }
 
   render(data: CardCatalogData): HTMLButtonElement {
-    this._cardId = data.id;
-    this.setText(this._category, data.category);
+    super.render(data);
+    this.setCategory(data.category);
     this.setImage(this._image, data.image, `Изображение ${data.title}`);
-    this.setText(this._title, data.title);
-    this.setText(this._price, data.price ? priceLabel(data.price || 0) : 'Бесценно');
     return this._container;
   }
 }

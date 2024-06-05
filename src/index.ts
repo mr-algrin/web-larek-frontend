@@ -49,7 +49,7 @@ const modal = new Modal(events, ensureElement<HTMLDivElement>(settings.modal.con
 const modalComponents: ModalComponentsMap = {
   [ModalState.basket]: new BasketComponent(events, cloneTemplate<HTMLDivElement>(templates.basketTemplate), settings.basket),
   [ModalState.success]: new SuccessComponent(events,cloneTemplate<HTMLDivElement>(templates.successTemplate), settings.success),
-  [ModalState.preview]: new CardPreviewComponent(events, cloneTemplate<HTMLDivElement>(templates.cardPreviewTemplate), settings.preview),
+  [ModalState.preview]: new CardPreviewComponent(events, cloneTemplate<HTMLDivElement>(templates.cardPreviewTemplate), {...settings.card, ...settings.cardPreview}),
   [ModalState.contacts]: new ContactsForm(events, cloneTemplate<HTMLFormElement>(templates.contactsTemplate), settings.form),
   [ModalState.order]: new OrderForm(events, cloneTemplate<HTMLFormElement>(templates.orderTemplate), {...settings.form, ...settings.orderForm})
 }

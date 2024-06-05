@@ -32,7 +32,7 @@ import {IFormValidator} from "../utils/validator";
 
 const renderCardBasket = (events: IEvents, data: CardBasketData) => {
   const container = cloneTemplate<HTMLLIElement>(templates.cardBasketTemplate);
-  return new CardBasketComponent(events, container, settings.cardBasket).render(data);
+  return new CardBasketComponent(events, container, {...settings.card, ...settings.cardBasket}).render(data);
 }
 
 export class Application implements IApplication {
@@ -93,7 +93,7 @@ export class Application implements IApplication {
   updateCatalog(evt: CatalogUpdateEvent) {
     const items = evt.products.map(item => {
       const element = cloneTemplate<HTMLButtonElement>(templates.cardCatalogTemplate);
-      const card = new CardCatalogComponent(this._events, element, settings.cardCatalog);
+      const card = new CardCatalogComponent(this._events, element, {...settings.card, ...settings.cardCatalog});
       return card.render(item);
     });
     this.page.setGallery(items);
@@ -171,9 +171,10 @@ export class Application implements IApplication {
 
   private contactsFormCompleted() {
     if (this._modalState === ModalState.contacts) {
+      const productIds = this.basketModel.getProducts().map(p => p.id);
       const order = {
         ...this.orderModel.buyer,
-        items: this.basketModel.getProducts().map(p => p.id),
+        items: productIds,
         total: this.basketModel.getTotalPrice(),
       };
       this.orderModel.createOrder(order)
@@ -181,11 +182,11 @@ export class Application implements IApplication {
           this.basketModel.clear();
           this.renderModal(this.modalComponents[ModalState.success].render({totalPrice: result.total}))
         })
-        .catch(() => {
+        .catch((error) => {
           this.modalComponents[ModalState.contacts].render({
             ...this.orderModel.buyer,
-            valid: true,
-            error: 'Не удалось создать заказ'
+            valid: false,
+            error: error || 'Не удалось создать заказ'
           })
         })
     }

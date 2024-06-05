@@ -6,13 +6,18 @@
 - src/ — исходные файлы проекта
 - src/components/ — папка с JS компонентами
 - src/components/base/ — папка с базовым кодом
+- src/components/common/ - папка с общими компонентами Form и Modal
+- src/components/model/ - папка с классами моделей данных
+- src/components/view/ - папка с классами отображения
+- src/types - папка с типами данных
+- src/utils - папка с набором утилит
 
 Важные файлы:
 - src/pages/index.html — HTML-файл главной страницы
 - src/types — Директория с типами
 - src/components/application.ts - класс Application - реализующий бизнес логику приложения
 - src/index.ts — точка входа приложения
-- src/styles/styles.scss — корневой файл стилей
+- src/scss/styles.scss — корневой файл стилей
 - src/utils/constants.ts — файл с константами
 - src/utils/utils.ts — файл с утилитами
 
@@ -46,64 +51,65 @@ yarn build
 
 В качестве основы для реализации данного приложения была выбрана архитектура Model-View-Presenter. Диаграмма представленная ниже отображает процессы взаимодействия между архитектурными слоями приложения.
 
-Слой `Model` реализует хранилище данных для всего приложения, а также предоставляет методы для управления этими данными или выборки.
+Слой `Model` реализует хранилище данных для всего приложения, а также предоставляет методы для управления этими данными или выборки. При обновлении моделей данных генериются события, которые обрабатываются в слое `Presenter`.
 
-Слой `View` реализует визуальные компоненты для отображения данных из моделей и взаимодействия с пользователем.
+Слой `View` реализует визуальные компоненты для отображения данных из моделей и взаимодействия с пользователем. При выполнении каких-либо действий пользователем генерируются события, которые обрабатываются в слое `Presenter`.
 
-Слой `Presenter` является связующим звеном между слоями Model и View, в данном слое реализуется вся функции бизнес логики:
+Слой `Presenter` является связующим звеном между слоями `Model` и `View`, в данном слое реализуется все функции бизнес логики:
 - Получение данных из моделей
-- Изменение данных в моделях через предоставляемые методы
+- Управление данными в моделях через предоставляемые методы
 - Обработка событий пользователя
+- Обработка событий изменений в моделях данных
 - Перерисовка компонентов пользовательского интерфейса
+- Управление состоянием приложения
 
-UML диаграмма архитектуры
+UML диаграмма архитектуры расположена в корневой директории проекта в директории `diagrams`
 
-![UML диаграмма архитектуры](./images/architecture-diagram.png)
+![UML диаграмма архитектуры](./diagrams/architecture-diagram.png)
 
-## Компоненты модели данных (MODEL)
+## Модели данных (MODEL)
 
-Описаны интерфейсы для получения данных с сервера, а также модели состояний для хранения данных и выполнения действий над ними.
+Для реализации слоя `Model` были описаны интерфейсы сущностей, API клиентов для получения данных с сервера, а также модели состояний для хранения данных и выполнения действий над ними.
 
 ### 1. Сущности приложения
 
-В файле `src/types/entity.ts` представлены модели данных, используемые для оптравки данных на сервер или получения их:
+В файле `src/types/entity.ts` описаны интерфейсы сущностей приложения, используемые для оптравки данных на сервер или получения их:
 - `IProduct` - хранит информацию о товаре
 - `IOrder` - хранит информацию для создания нового заказа
 - `IOrderResult` - содержит информацию, в случае успешного создания заказа
 
 ### 2. API интерфейсы
 
-Для работы с внешним источником данных (REST API сервером) в файле `src/types/api.ts` описаны интерфейсы `IProductAPI` и `IOrderApi`
+Для работы с внешним источником данных (REST API сервером) в файле `src/types/api.ts` описаны интерфейсы API клиентов `IProductAPI` и `IOrderApi`
 
 `IProductApi` предоставляет методы:
-- `getProducts` - получение коллекции всех товаров, хранящихся на сервере
-- `getProduct` - получение одного товара по уникальному аттрибуту `id`
+- `getProducts` - метод для получение коллекции всех товаров, хранящихся на сервере. Возвращает коллекцию объектов `IProduct`
+- `getProduct` - метод для получение одного товара по уникальному аттрибуту `id`. Возвращает объект типа `IProduct`
 
 `IOrderApi` предоставляет методы:
-- `createOrder` - создание нового заказа на сервере, возвращает объект `IOrderResult`
+- `createOrder` - метод для создания нового заказа на сервере, возвращает объект `IOrderResult`
 
 ### 3. Модели данных
 
-Для хранения и управления данными в приложении был добавлен набор интерфейсов, реализующих слой Model.
+Для хранения и управления данными в приложении был добавлен набор интерфейсов, реализующих слой `Model`.
 
-Модель `ICatalogModel` агрегирует коллекцию каталога товаров, а также методы для работы с коллекцией:
+Интерфейс `ICatalogModel` агрегирует коллекцию каталога товаров, а также методы для работы с коллекцией:
 - `products` - хранит коллекцию товаров
 - `setProducts` - метод установки коллекции товаров
 - `getProduct` - метод, для получение одного товара из коллекции по атрибуту `id`
 
-Модель `IBasketModel` описывает свойства и методы для работы с корзиной товаров:
-- `products` - хранит товары добавленные в корзину в формате `Map<key, value>`, где `key` - идентификатор товара, `value` - сам товар
-- `addProduct` - метод, для добавления товара в корзину
+Интерфейс `IBasketModel` описывает свойства и методы для работы с моделью корзины товаров:
+- `addProduct` - метод, для добавления товара в корзину, принимает аргумент типа `IProduct`
 - `removeProduct` - метод, для удаления товара из корзины по идентификатору
 - `getTotal` - метод, для получения общего количества товаров в корзине
 - `getTotalPrice` - метод для расчёта общей стоимости корзины товаров
-- `getProducts` - метод для получения списка товаров добавленных в корзину
+- `getProducts` - метод для получения списка товаров добавленных в корзину, возвращает коллекцию объектов `IProduct`
 - `clear` - метод, для очистки всей корзины, может быть использован после того как заказ оформлен
 
-Модель `IOrderModel` агрегирует информацию пользователя, необходимую для создания заказа:
-- `buyer` - интерфейс `IBuyerInfo` описывает объект, хранящий информацию о способе оплаты, адресе доставки, email и телефоне
-- `changeBuyerField` - метод для обновления полей объекта `buyer`
-- `reset` - метод, для очисти данных о покупателе, может быть использован после того как заказ создан
+Интерфейс `IOrderModel` агрегирует информацию пользователя, необходимую для создания заказа:
+- `buyer` - интерфейс `IBuyerInfo` описывает данные необходимые для создания заказа (способ оплаты, адрес доставки, email и телефон).
+- `changeBuyerField` - метод для обновления полей объекта `buyer`. Принимает аргументы `key`  - поле для обновления и `value` - обновлённое значение.
+- `reset` - метод, для очисти данных о покупателе, может быть использован после того как заказ создан.
 
 ```ts
 export interface IBuyerInfo {
@@ -116,34 +122,46 @@ export interface IBuyerInfo {
 
 ## Компоненты отображения (VIEW)
 
-Для реализации слоя отображения данных был описан ряд интерфейсов и реализованы базовые классы компонентов:
+Для реализации слоя отображения данных был описан набор интерфейсов:
 
-- `IComponent<T extends HTMLElement, D extends object, S>` - generic интерфейс базового компонента, в качестве аргументов принимает:
+- `IComponent<T extends HTMLElement, D extends object, S>` - generic интерфейс базового компонента
 - `IModal` - интерфейс для реализации компонента модального окна, расширяет интерфейс `IComponent`
 - `IForm` - интерфейс для реализации компонента формы, расширяет интерфейс `IComponent`
 
-Для данных интерфейсов, был реализован набор базовых классов:
+Для данных интерфейсов, был спроектирован набор базовых классов:
 
-- Класс `Component` - это базовый абстрактный класс, который является основным для всех компонентов интерфейса, реализует интерфейс `IComponent`
-- Класс `Modal` - компонент модального окна, наследуется от базового класса `Component`, а также реализует интерфейс `IModal`
-- Класс `Form` - абстрактный класс формы, наследуется от базового класса `Component`, а также реализует интерфейс `IForm`
+- Класс `Component` - это базовый абстрактный класс, который является основным для всех компонентов интерфейса, реализует методы интерфейса `IComponent`,
+  - конструктор класса - принимает 3 парамета: events типа `IEvents` - необходим для генерации событий при взаимодействии с компонентом, container - HTML элемент компонента типа `T`, а также объект с настройками для компонента типа `S`
+  - абстрактный метод `render` - отрисовывает данные из объекта типа `D` и возвращает HTML элемент типа `T`, переопределяется в дочерних классах
+  - `protected` метод `setText` - принимает 2 парметра (`element` и `text`) и устанавливает значение свойства `textContent` для элемента
+  - `protected` метод `setImage` - принимает элемент типа `HTMLImageElement` и устанавливает ссылку на изображение для элемента
+- Класс `Modal` - компонент модального окна, наследуется от базового класса `Component`, а также реализует методы интерфейса `IModal`:
+  - метод `setContent` - принимает аргумент `content` типа `HTMLElement` и устанавливает контент, который должен быть отрисован в модальном окне
+  - метод `open` - отображает модальное окно
+  - метод `close` - скрывает модальное окно
+- Класс `Form` - абстрактный класс формы, реализующий базовый функционал для всех наследуемых классов. Класс наследуется от базового класса `Component`, а также реализует методы интерфейса `IForm`:
+  - метод `setError` - устанавливает текстовое описание элемента ошибки в форме
+  - метод `setValid` - изменяет состояние элемента кнопки отправки формы
+  - абстрактный метод `onSubmit` - обработчик отправки формы, переопределяется в дочерних классах
+  - абстрактный метод `onInputChange` - обработчик изменения значения в текстовом поле, переопределяется в дочерних классах
 
-В директории `src/components/view` был реализован набор View компонентов:
+Помимо базовых классов также был спроектирован набор классов для непосредственного отображения данных:
 
-- `GalleryComponent` - компонент галерии товаров
+- `PageComponent` - компонент главной страницы, хранит ссылку на контейнер для отрисовки списка карточек товаров, а также элемент корзины товаров
 - `BasketComponent` - компонент для отображения добавленных в корзину товаров
-- `BasketCounterComponent` - компонент значка и счётчика корзины
-- `CardBasketComponent` - компонент карточки товара добавленного в корзину
-- `CardCatalogComponent` - компонент карточки товара, отображаемой в галерее
-- `CardPreviewComponent` - компонент карточки товара, отображаемого в модальном окне
+- `CardComponent` - компонент, который содержит общие элементы для карточки товара
+- `CardBasketComponent` - компонент карточки товара добавленного в корзину. Наследуется от `CardComponent`.
+- `CardCatalogComponent` - компонент карточки товара, отображаемой в галерее. Наследуется от `CardComponent`.
+- `CardPreviewComponent` - компонент карточки товара, отображаемого в модальном окне. Наследуется от `CardComponent`.
 - `OrderForm` - компонент формы, для выбора способа платежа и указания адреса доставки
 - `ContactsForm` - компонент формы, для указания контактных данных
 - `SuccessComponent` - компонент подтверждения оформленного заказа
 
-Экземпляры классов большинства всех реализованных View компонентов создаются во время инициализации приложения, кроме компонентов `CardBasket` и `CardCatalog`, данные экземпляры создаются динамически во время отрисовки галерии или корзины товаров
+Экземпляры классов большинства всех реализованных View компонентов создаются во время инициализации приложения, кроме компонентов `CardBasket` и `CardCatalog`. Данные экземпляры должны создаваться динамически во время отрисовки галерии или корзины товаров
 
-В директории `src/types/view` собраны интерфейсы данных и настроек компонентов отображения:
+В директории `src/types/view` описаны интерфейсы данных и настроек компонентов отображения:
 
+- `PageData` - описывает данные необходимые для отображения галереии товаров и счётчика корзины товаров
 - `BasketData` - описывает данные необходимые для отображения корзины товаров
 - `CardBasketData` - описывает данные необходимые для отображения одного элемента карточки товара в корзине
 - `CardCatalogData` - описывает данные необходимые для отображения одного элемента карточки товара в каталоге всех товаров
@@ -152,9 +170,9 @@ export interface IBuyerInfo {
 - `OrderData` - описывает данные необходимые для отображения способа оплаты и адреса доставки при создании заказа
 - `SuccessData` - описывает данные необходимые для отображения после успешного офрмления заказа
 
-[UML диаграмма классов](https://viewer.diagrams.net/index.html?tags=%7B%7D&target=blank&highlight=0000ff&edit=_blank&layers=1&nav=1&title=yandex-practicum.drawio#R7V1fc6M4Ev80rso%2BeMuA%2Fz5O7GQ3VZO62XV2b%2BdepmSs2NRgxIHsOPfpTwLJgBAOJoAF5iUxQkgtddP961ZL9Iz57vibB9ztM1pDu6cP1seesejpujGbzn4dkR%2B07D0s04f6JCzZeNY6LNOigqX1P8gKB6x0b62hn6iIEbKx5SYLTeQ40MSJMuB56C1Z7RXZyV5dsIGpgqUJbF7KR0DL%2F22t8ZaVa%2BNZdON3aG22rPOpPg5vrID5c%2BOhvcN6dJADwzs7wJtho%2FS3YI3eYkXGQ8%2BYewjh8NfuOIc2nVs%2BZ%2Fw5%2FM4J7Rn3W7yzyYVGfga3HzMe1vI8TMblQQfHu8tqz%2FrP%2Fd7YLdFgt7F%2BzvDq%2BU%2F7jz7r5ADsPe9EH9ukvXs30ff4v3s6yvsd8DaW0zO%2BkLtD90j%2BDk5%2FKUkDDI%2B4D2xrwyqZhDrohfdekYP7fiA89Jams4d44%2BTXhv0PSFhJScjbyhPt%2BBWYkDdHpmaV6sL7VB8lUTpHO5eIHeGjPgY7lxQFrb6Qh8h0Qmftk1%2B%2Fvzx%2FfbDhLqg2JwWLU%2B0ELbJhkjJXLNvKh75C3hp6fXaD0u0jm8pQEQ5%2BLEQDQYhCsSomLuXwsuVzRWsTlUHovlsDDHrGY%2FjI4pfw%2F0vZr0YVXBEU4wF62CLW4EuodxYY0beCaaGFDV%2FpU4jUerUD%2Ff1qEc2YUKZvWwvDpUu1hbF4I3aSkchMnaafuqV9waNgjCIdrJ3sArG3EO0g9t5JFfZAfzxjNoFZ2v6EXb9FRksfs7JtzF5pA1YImKncnBqPdD75wdT%2BBSZg1F4TUL4M5tKsjZ83ghGBfcP2xKCzbyMf3u8xRqxlan%2FD65MV%2FowIlEcoqR2oH07kwjqoQ2Fnmi8zzciFzh0zxQdECL4%2BC%2B%2F526AgXT7E81D%2B71LvAXsJ1CM6Ab9o%2FUDfLsjlL%2Fnf4sZCoJmehECjWRoCGZoEAp386dIh0Li9EOjLysceMPHcBr5%2FzqR3SOsa7HlE3q6XcPoXoXO%2F7HXOfYRxoOchz2cUY89yNgqockqYv1%2FtLKw2TOyTmz8sx91jNoPPwE3KHJ%2FSOaP%2FiVaOyJfLYdtlDjDN%2BQzxFq0pNHOWAbfv4IGhjPD64SBHGRWC3vqmgTHfWflurH%2FfBY6c2adoet9ENvLCLizHwhawL%2BteMv%2BBXM63wNnAiAmhsGbwgExeSKsyc1rfBJYvh4pNJXMAAgH4m2K3OwfsYNJKzCNcFxWr5xKQYTxQG3cXWDrlaSWzba3vDiDQ4%2FSRFUI2BI56xKZ8LYq4qKuVQl1xMxfzw2h9VSx5pZalsQ7laKScQzmROJTC%2FBK5%2FEJXvskVjfmQuSAlj8EkBrNHruITFZvXwDpA2v2A1jta%2BB%2F6%2B9fJiF1%2Bj91aHOMX7%2FzCIaP8J37xPdYEvY6eC674g3L%2BwXVqeV7gHgV9e8%2BEHzvhmLwyEJ%2Bpp8ulIcZsjS%2BgeNAG2DokaZMxmzX3DVn0LeeSpQuCNRTlJRwTeyq%2B9C40NEm2Y0yEdsIxp9oh8gHeY9VcWsFPCedpEorL66y9ARAaHiQo0mee9q160ZHhUAa%2BXUJSiziRcqou9StVcggL%2BmQNQIRcbyTuXAwOGwuqhlrSZk1loGokAVWaURWo4hS10Ur9i%2BqxGzdRKeXywwT%2BVu3Yqpxqb12YatX52QB71hCz9SnrFOiLGzVNU1090yTLo67c4c%2Fv74tsiPz%2FmMv%2F%2FURItv9for8%2Fy%2Bnvj2vz9%2FvDQVKyZqLA5HX4%2B4Y2ScqomL6Z4fKX5dBrutoCGRNA%2FSIBrDAAxfFlSyVSCGZNcwahSpPIFucZN2irya2n9nb5qK3NR5VmKlyXziRNUbJq%2BOyZlFUCcQ1hTfIsAxoL5sVs0NOa3EeLd9WBeV2WDtphp%2FPYaZQTO2WIQxXYaTROipY2LIqdRBSWaqli7KTL1pM77FQ3duqSdTt41aWv3XL6WmNhlpgjpQLMmtYIs4rGO8sItpYIszgQUAlmGQI40guHqE6wKqulimEW7y6nRK5sZP4k%2FF0DfxtImpaQz0F9boAqXkBuJ2BUoxcwzcgOvdwLyNq4WJd4XrbI1Iln4QzTSSeeBcTzsiUnVcRTiwvndTOgdfWMuyiexrQs8Uy1VLV4GjXCzTJz8vUrSmReg67XCDeFxESjsMLURh%2B0VLVEDiUS2ZKo3j3wf9LVjuhcu1uNiKXzA23LP22upk8nb9NloL%2B%2BxqpcP2qSHsKqcUmZrmeZMCJ46QKFyO2ipp9M4Q%2FVza2coKMJhwhqA1kGJA%2FLJKJ540G2wf1UNM9ocXoPN2Z7SkAum9a9ygVT58M5vlk93Y1DrXG06GU7YzeZZhPMZw5M11QLKi40yA0oz2mpyYA2Juuop0Y0l7vPKgQnPhsd04RUpdqDY7K12Jagt%2BXeNKHvd7GIK5%2Fn9WMNfdOzXGzFIwffgAc29LskaUOj2GlT9c1UeP7cDz8U3LxbSWXT1UGjwtCIqY0biSlopzwfZoEmo7whhco%2BTGDITqWpGhFdjoeEBcRrLtdwM64CJOKCJchVaiNkbogknvJVM0TiLoP6%2BFydXQGGeuuHw%2BnsvBjllUdd8CENfVSrPMqyLVqC2HOfWV4MDSo%2B%2BoyPgZ2bB3mHJSLSxJfIMjfa5aQrb6eJD55dcfCnr61duNWjBsLys6LlEJ5%2FCAdYDl8%2BeDk39BrJ8iHGlrNhZ68vFaEK0lNuGE1PD%2BFF5zReztoXohbvYCybI%2F2dRsX377RlMYgx5GkH6JFOIkeC4gRbfM9M77UClOLHJLPoXuyOX5VEXVJn%2FOf6MmU7Qi6GmBDLPeN4xGUmWYM6fXW59IjLsMWfA%2F4N2Db03rv0jeYoohbN1b2o27oQsz7TJApPFmIW87LL03eyIEpVMb2MePFH4eLLI9MVBvS4gVAooDcV9gOMi57yMZt80FDVAWbZBpWWGN85PRK32xKQmfdIFPDuiSiLo6qZj2mSsYX5jDeBXKXz%2F0vcYNGi10SKmSJNIsCmr0%2BtRE1DYQOmNFVRn0pQU3WpikPZxjU1l0JVWQnlxl0h4DQWFjALr8yPeJCCfyapbuDU4q0nVN3NiaKz0aZDTtdOYDQBhhtEZfU8jKg5E6%2Bd%2BY%2BZS5uy2a2F%2FRZdQshaUeiyVhXlmuCndAxTnWG5PLW8TGuR7ct0hxg%2BuJ3tWxMF9z8P6zzN8HM%2B0WUnIFbpFKmXHjoRNmJNCkeT9Q8aqtopavMnXYnS%2B%2BbBgwXfOqfo2k5RIXzVeUONh2mfcYY7vnVebMe1qzlFHdNqMo0EMUU863Y6N4ZxeVdfuyhEFIVggPxWk9lUiEHwHbLXS2fL%2FTmFngrJbHm%2FQFtf%2BEHThSS007eOL94uPRQ3XostFQ5AkEsPUbUQVadm7RmtIa3xfw%3D%3D#%7B%22pageId%22%3A%229SbHhEerrRLEkBQXGAMH%22%7D)
+UML диаграмма классов расположенна в корневой директории проекта в директории `diagrams`
 
-![UML диаграмма](./images/class-diagram.png)
+![UML диаграмма](diagrams/class-diagram.png)
 
 ## Компоненты представления и бизнес-логики (Presenter)
 
@@ -170,13 +188,16 @@ export interface IApplication {
   catalogModel: ICatalogModel
   orderModel: IOrderModel
 
-  // контейнерные компоненты
-  gallery: IGalleryComponent;
-  basketCounter: IBasketCounterComponent;
+  // компонент страницы
+  page: IPage;
 
   // модальные компоненты
   modal: IModal;
   modalComponents: ModalComponentsMap;
+
+  // валидаторы
+  orderValidator: IFormValidator<OrderData>;
+  contactsValidator: IFormValidator<ContactsData>;
 
   init: () => void
   openBasket: () => void
@@ -190,7 +211,6 @@ export interface IApplication {
   createOrder: () => void
   closeModal: () => void
 }
-
 ```
 
 Одной из главных функцией класса `Application` является обработка событий, генерируемых в слоях `View` и `Model`. Данные передаются через экземпляр класса `EventEmitter`.
@@ -213,9 +233,10 @@ export enum UIEvents {
   BasketOpen = 'ui:basket-open',
   BasketCreateOrder = 'ui:basket-create-order',
   OrderFormChanged = 'ui:order-form-changed',
-  OrderFormComplete = 'ui:order-form-complete',
+  OrderFormCompleted = 'ui:order-form-completed',
   ContactsFormChanged = 'ui:contacts-form-changed',
-  ContactsFormComplete = 'ui:contacts-form-complete'
+  ContactsFormCompleted = 'ui:contacts-form-completed',
+  SuccessOrder = 'ui:success-order'
 }
 ```
 
@@ -229,4 +250,14 @@ export enum UIEvents {
 - `FormFieldChangeEvent<T>` - событие генерируемое при изменении полей формы
 
 
-### P.S. Архитекрута реализована, функционал только частично реализован
+Методы интерфейса `IApplication` описывают процессы бизнес логики, которые должны происходить в слое `Presenter`, ниже описано назначение основных методов:
+- метод `init` - устанавливает обработчик событий и загружает коллекцию товаров с сервера
+- метод `openBasket` - обрабатывает событие открытия корзины
+- метод `updateBasketCounter` - обновляет счётчик корзины товаров
+- метод `updateCatalog` - обработчик события `CatalogUpdateEvent`, генерируемого в слое `Model`. При срабатывании данного события происходит перерисовка корзины товаров.
+- метод `updateBasket` - обработчик события `BasketUpdateEvent`, генерируемого в слое `Model`. При срабатывании данного события происходит обновление счётчика товаров, а также перерисовывается компонент корзины товаров в модальном окне, в случае если оно активно.
+- метод `updateBuyerInfo` - обработчик события `BuyerInfoUpdated`, генерируемого в слое `Model`. При срабатывании данного события происходит онбволения компонента `OrderForm` или `ContactsForm` в зависимости от активного состояния модального окна.
+- метод `selectProduct` - обработчик события `ProductEvent`, генерируемого в слое `View` при нажатии на карточку товара. После выбора карточки будет получено полное описание объекта `IProduct` из модели `CatalogModel` и отображен компонент `preview` в модальном окне.
+- метод `addProductToBasket` - обработчик события `ProductEvent`, генерируемого в слое `View` при добавлении товара в корзину.
+- метод `removeProductFromBasket` - обработчик события `ProductEvent`, генерируемого в слое `View` при удалении товара из корзины.
+- метод `closeModal` - обработчик события закрытия модального окна

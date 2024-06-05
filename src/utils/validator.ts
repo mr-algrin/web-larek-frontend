@@ -40,7 +40,7 @@ export class ContactsFormValidator implements IFormValidator<ContactsData> {
     else if (!isValidaEmail(data.email))
       error = 'Необходимо указать корректный электронный адрес';
     else if (!isValidPhone(data.phone))
-      error = 'Необходимо указать корректный номер телефона';
+      error = 'Необходимо указать корректный номер телефона в формате +7 (000) 000-00-00';
     else valid = true;
 
     return {valid, error}

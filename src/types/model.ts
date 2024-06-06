@@ -7,6 +7,7 @@ export interface ICatalogModel {
 }
 
 export interface IBasketModel {
+  hasProduct: (id: string) => boolean
   addProduct: (product: IProduct) => void
   removeProduct: (id: ProductIdType) => void
   getProducts: () => Array<IProduct>

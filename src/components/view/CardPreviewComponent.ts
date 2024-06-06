@@ -18,6 +18,8 @@ export class CardPreviewComponent extends CardComponent<HTMLDivElement, CardPrev
 
   render(data: CardPreviewData): HTMLDivElement {
     super.render(data);
+    // Если товар в корзине или у него не указана цена, его нельзя добавить в корзину
+    this._button.disabled = data.inBasket || data.price === null;
     this.setCategory(data.category);
     this.setDescription(data.description);
     this.setImage(this._image, data.image);

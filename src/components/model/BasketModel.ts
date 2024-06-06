@@ -17,6 +17,10 @@ export class BasketModel extends Model implements IBasketModel {
     });
   }
 
+  hasProduct(id: string) {
+    return this._products.has(id);
+  }
+
   addProduct(product: IProduct): void {
     if (!this._products.has(product.id)) {
       this._products.set(product.id, product);

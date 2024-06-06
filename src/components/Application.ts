@@ -135,7 +135,10 @@ export class Application implements IApplication {
     const product = this.catalogModel.getProduct(evt.id);
     if (product) {
       this._modalState = ModalState.preview;
-      this.renderModal(this.modalComponents[ModalState.preview].render(product));
+      this.renderModal(this.modalComponents[ModalState.preview].render({
+        ...product,
+        inBasket: this.basketModel.hasProduct(product.id)
+      }));
     }
   }
 

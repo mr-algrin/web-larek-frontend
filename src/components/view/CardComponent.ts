@@ -33,6 +33,9 @@ export class CardComponent<T extends HTMLElement, D extends CardData, S extends 
 
   protected setCategory(category: string) {
     this.setText(this._category, category);
+    Object.keys(categoryClass).forEach(key => {
+      this._category?.classList.remove(categoryClass[key]);
+    })
     if (category in categoryClass) {
       this._category?.classList.add(categoryClass[category]);
     }

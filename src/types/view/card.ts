@@ -36,6 +36,7 @@ export interface CardPreviewData extends CardData{
   category: string;
   description: string;
   image: string;
+  inBasket: boolean
 }
 
 export interface CardPreviewSettings extends CardSettings{
